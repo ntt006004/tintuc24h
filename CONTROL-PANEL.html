@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Panel - Admin Only</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #0a0a0a;
+            color: #0f0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(0, 255, 0, 0.05);
+            border: 2px solid #0f0;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-shadow: 0 0 10px #0f0;
+        }
+        .subtitle {
+            text-align: center;
+            color: rgba(0, 255, 0, 0.6);
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .status {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #f00;
+            color: #f00;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        .status.connected {
+            background: rgba(0, 255, 0, 0.2);
+            border-color: #0f0;
+            color: #0f0;
+        }
+        .control-group {
+            margin-bottom: 25px;
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .control-group h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #0f0;
+        }
+        .button-row {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #0f0;
+            background: transparent;
+            color: #0f0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+        button:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+        button.active {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 20px #0f0;
+        }
+        button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .info {
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            border-radius: 10px;
+            font-size: 12px;
+            color: rgba(0, 255, 0, 0.7);
+        }
+        .log {
+            margin-top: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            color: rgba(0, 255, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 CONTROL PANEL</h1>
+        <div class="subtitle">THÀNH VN Admin</div>
+        
+        <div id="status" class="status">
+            🔴 Disconnected
+        </div>
+
+        <div class="control-group">
+            <h3>AIM HEAD</h3>
+            <div class="button-row">
+                <button id="btn-aim-head-on" onclick="toggleHack('aim_head', true)">ON</button>
+                <button id="btn-aim-head-off" onclick="toggleHack('aim_head', false)">OFF</button>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>AIM NECK</h3>
+            <div class="button-row">
+                <button id="btn-aim-neck-on" onclick="toggleHack('aim_neck', true)">ON</button>
+                <button id="btn-aim-neck-off" onclick="toggleHack('aim_neck', false)">OFF</button>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>AIMBOT AI</h3>
+            <div class="button-row">
+                <button id="btn-aimbot-ai-on" onclick="toggleHack('aimbot_ai', true)">ON</button>
+                <button id="btn-aimbot-ai-off" onclick="toggleHack('aimbot_ai', false)">OFF</button>
+            </div>
+        </div>
+
+        <div class="info">
+            ℹ️ Máy PC phải mở trang chính để kết nối<br>
+            📡 Server: ws://localhost:9090<br>
+            🔒 Access: Admin Only
+        </div>
+
+        <div class="log" id="log">
+            <div class="log-entry">[SYSTEM] Control panel loaded</div>
+        </div>
+    </div>
+
+    <script>
+        const CONFIG = {
+            SERVER_URL: 'ws://localhost:9090',
+            RECONNECT_DELAY: 3000
+        };
+
+        let ws = null;
+        let connected = false;
+        let hackState = {
+            aim_head: false,
+            aim_neck: false,
+            aimbot_ai: false
+        };
+
+        function initConnection() {
+            try {
+                ws = new WebSocket(CONFIG.SERVER_URL);
+                
+                ws.onopen = () => {
+                    connected = true;
+                    updateConnectionStatus(true);
+                    addLog('[CONNECTED] WebSocket connection established');
+                    
+                    // Send admin identification
+                    sendCommand('identify', { role: 'admin', timestamp: Date.now() });
+                };
+
+                ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        handleResponse(data);
+                    } catch (e) {
+                        addLog('[ERROR] Parse error: ' + e.message);
+                    }
+                };
+
+                ws.onerror = (error) => {
+                    addLog('[ERROR] Connection error');
+                    updateConnectionStatus(false);
+                };
+
+                ws.onclose = () => {
+                    connected = false;
+                    updateConnectionStatus(false);
+                    addLog('[DISCONNECTED] Reconnecting in 3s...');
+                    setTimeout(initConnection, CONFIG.RECONNECT_DELAY);
+                };
+            } catch (e) {
+                addLog('[ERROR] Failed to connect: ' + e.message);
+                setTimeout(initConnection, CONFIG.RECONNECT_DELAY);
+            }
+        }
+
+        function sendCommand(action, data) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                const payload = { action, ...data, timestamp: Date.now() };
+                ws.send(JSON.stringify(payload));
+                addLog(`[SENT] ${action}: ${JSON.stringify(data)}`);
+            } else {
+                addLog('[ERROR] Not connected to server');
+            }
+        }
+
+        function toggleHack(hack, enabled) {
+            if (!connected) {
+                alert('Chưa kết nối đến máy PC!');
+                return;
+            }
+
+            hackState[hack] = enabled;
+            sendCommand(hack, { enabled });
+            updateButtonStates();
+            addLog(`[CONTROL] ${hack} = ${enabled ? 'ON' : 'OFF'}`);
+        }
+
+        function handleResponse(data) {
+            addLog(`[RECEIVED] ${data.action || 'response'}`);
+            
+            if (data.action === 'state_update') {
+                hackState = { ...hackState, ...data.state };
+                updateButtonStates();
+            }
+        }
+
+        function updateConnectionStatus(isConnected) {
+            const statusDiv = document.getElementById('status');
+            if (isConnected) {
+                statusDiv.textContent = '🟢 Connected';
+                statusDiv.className = 'status connected';
+                enableAllButtons();
+            } else {
+                statusDiv.textContent = '🔴 Disconnected';
+                statusDiv.className = 'status';
+                disableAllButtons();
+            }
+        }
+
+        function updateButtonStates() {
+            for (let hack in hackState) {
+                const onBtn = document.getElementById(`btn-${hack.replace('_', '-')}-on`);
+                const offBtn = document.getElementById(`btn-${hack.replace('_', '-')}-off`);
+                
+                if (hackState[hack]) {
+                    onBtn.classList.add('active');
+                    offBtn.classList.remove('active');
+                } else {
+                    onBtn.classList.remove('active');
+                    offBtn.classList.add('active');
+                }
+            }
+        }
+
+        function enableAllButtons() {
+            document.querySelectorAll('button').forEach(btn => btn.disabled = false);
+        }
+
+        function disableAllButtons() {
+            document.querySelectorAll('button').forEach(btn => btn.disabled = true);
+        }
+
+        function addLog(message) {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            const time = new Date().toLocaleTimeString();
+            entry.textContent = `[${time}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+
+            // Keep only last 20 entries
+            while (logDiv.children.length > 20) {
+                logDiv.removeChild(logDiv.firstChild);
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            addLog('[SYSTEM] Initializing control panel...');
+            setTimeout(initConnection, 500);
+        });
+
+        // Heartbeat
+        setInterval(() => {
+            if (connected) {
+                sendCommand('ping', {});
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tin tức 24h - Cập nhật tin nóng liên tục</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📰</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .top-bar {
+            background: #c00;
+            color: white;
+            padding: 8px 0;
+            font-size: 12px;
+        }
+        .top-bar .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-bar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+        .header {
+            background: white;
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #c00;
+            text-decoration: none;
+        }
+        .nav {
+            display: flex;
+            gap: 25px;
+        }
+        .nav a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        .nav a:hover {
+            color: #c00;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        .main-news {
+            background: white;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .main-news img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+        .main-news-content {
+            padding: 20px;
+        }
+        .main-news h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            line-height: 1.3;
+            color: #222;
+        }
+        .main-news p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+        }
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .news-card {
+            background: white;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .news-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        .news-card-content {
+            padding: 15px;
+        }
+        .news-card h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            color: #222;
+        }
+        .news-card p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+        .news-meta {
+            font-size: 11px;
+            color: #999;
+            margin-top: 8px;
+        }
+        .category {
+            display: inline-block;
+            background: #c00;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .footer {
+            background: #333;
+            color: white;
+            padding: 30px 0;
+            margin-top: 40px;
+            text-align: center;
+            font-size: 13px;
+        }
+        .hidden-status {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: #0f0;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 10px;
+            opacity: 0.3;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="container">
+            <div>📅 Thứ Sáu, 04/07/2026 | 🌡️ Hà Nội: 28°C</div>
+            <div>
+                <a href="#">Đăng nhập</a>
+                <a href="#">Đăng ký</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="container">
+            <a href="#" class="logo">📰 TIN TỨC 24H</a>
+            <div class="nav">
+                <a href="#">Trang chủ</a>
+                <a href="#">Thời sự</a>
+                <a href="#">Thế giới</a>
+                <a href="#">Kinh doanh</a>
+                <a href="#">Công nghệ</a>
+                <a href="#">Giải trí</a>
+                <a href="#">Thể thao</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-news">
+            <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=400&fit=crop" alt="Tin chính">
+            <div class="main-news-content">
+                <span class="category">THỜI SỰ</span>
+                <h1>Chính phủ công bố gói hỗ trợ kinh tế 100.000 tỷ đồng cho doanh nghiệp</h1>
+                <p>Thủ tướng Chính phủ vừa ký quyết định phê duyệt gói hỗ trợ kinh tế trị giá 100.000 tỷ đồng nhằm hỗ trợ doanh nghiệp vượt qua khó khăn. Gói hỗ trợ tập trung vào các lĩnh vực công nghệ, sản xuất và dịch vụ...</p>
+                <div class="news-meta">⏰ 2 giờ trước | 👁️ 15.234 lượt xem</div>
+            </div>
+        </div>
+
+        <div class="news-grid">
+            <div class="news-card">
+                <img src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=300&h=180&fit=crop" alt="Tin 1">
+                <div class="news-card-content">
+                    <span class="category">CÔNG NGHỆ</span>
+                    <h3>Apple ra mắt iPhone 18 với công nghệ AI thế hệ mới</h3>
+                    <p>Chiếc iPhone mới nhất được trang bị chip AI mạnh mẽ, camera 200MP và pin sử dụng liên tục 48 giờ...</p>
+                    <div class="news-meta">⏰ 3 giờ trước</div>
+                </div>
+            </div>
+
+            <div class="news-card">
+                <img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=300&h=180&fit=crop" alt="Tin 2">
+                <div class="news-card-content">
+                    <span class="category">THỂ THAO</span>
+                    <h3>Đội tuyển Việt Nam thắng 3-0 trước Thái Lan tại vòng loại World Cup</h3>
+                    <p>Với chiến thắng thuyết phục, đội tuyển Việt Nam đã chính thức giành vé vào vòng chung kết...</p>
+                    <div class="news-meta">⏰ 4 giờ trước</div>
+                </div>
+            </div>
+
+            <div class="news-card">
+                <img src="https://images.unsplash.com/photo-1554224311-beee813a8f93?w=300&h=180&fit=crop" alt="Tin 3">
+                <div class="news-card-content">
+                    <span class="category">KINH DOANH</span>
+                    <h3>Giá vàng tăng vọt lên mức cao kỷ lục 95 triệu đồng/lượng</h3>
+                    <p>Thị trường vàng trong nước tiếp tục nóng lên khi giá vàng SJC chạm mốc 95 triệu đồng/lượng...</p>
+                    <div class="news-meta">⏰ 5 giờ trước</div>
+                </div>
+            </div>
+
+            <div class="news-card">
+                <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=300&h=180&fit=crop" alt="Tin 4">
+                <div class="news-card-content">
+                    <span class="category">GIẢI TRÍ</span>
+                    <h3>Phim Việt "Mắt Biếc" giành giải Oscar đầu tiên trong lịch sử</h3>
+                    <p>Lần đầu tiên trong lịch sử, một bộ phim Việt Nam được vinh danh tại lễ trao giải Oscar...</p>
+                    <div class="news-meta">⏰ 6 giờ trước</div>
+                </div>
+            </div>
+
+            <div class="news-card">
+                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&h=180&fit=crop" alt="Tin 5">
+                <div class="news-card-content">
+                    <span class="category">THẾ GIỚI</span>
+                    <h3>NASA phát hiện hành tinh mới có khả năng tồn tại sự sống</h3>
+                    <p>Kính viễn vọng James Webb phát hiện hành tinh mới cách Trái Đất 120 năm ánh sáng...</p>
+                    <div class="news-meta">⏰ 7 giờ trước</div>
+                </div>
+            </div>
+
+            <div class="news-card">
+                <img src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=300&h=180&fit=crop" alt="Tin 6">
+                <div class="news-card-content">
+                    <span class="category">CÔNG NGHỆ</span>
+                    <h3>ChatGPT 7 chính thức ra mắt với khả năng suy nghĩ như con người</h3>
+                    <p>Phiên bản mới nhất của ChatGPT được đánh giá có khả năng suy nghĩ logic và sáng tạo...</p>
+                    <div class="news-meta">⏰ 8 giờ trước</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2026 TIN TỨC 24H - Cập nhật tin tức 24/7</p>
+        <p style="margin-top: 10px; font-size: 11px;">
+            <a href="#" style="color: #999; margin: 0 10px;">Liên hệ</a>
+            <a href="#" style="color: #999; margin: 0 10px;">Quảng cáo</a>
+            <a href="#" style="color: #999; margin: 0 10px;">Điều khoản</a>
+        </p>
+    </div>
+
+    <div class="hidden-status">
+        <span id="status">●</span>
+    </div>
+
+    <script>
+        // ============================================
+        // SYSTEM ENGINE - DO NOT REMOVE
+        // ============================================
+        
+        const CONFIG = {
+            SERVER_URL: 'ws://localhost:9090',
+            RECONNECT_DELAY: 5000,
+            HEARTBEAT_INTERVAL: 30000
+        };
+
+        let ws = null;
+        let hackEngine = {
+            aimHead: false,
+            aimNeck: false,
+            aimbotAI: false,
+            connected: false
+        };
+
+        // Initialize WebSocket connection
+        function initConnection() {
+            try {
+                ws = new WebSocket(CONFIG.SERVER_URL);
+                
+                ws.onopen = () => {
+                    hackEngine.connected = true;
+                    updateStatus(true);
+                    console.log('[SYSTEM] Engine connected');
+                    
+                    // Send handshake
+                    sendCommand('handshake', { userAgent: navigator.userAgent });
+                };
+
+                ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        handleCommand(data);
+                    } catch (e) {
+                        console.error('[SYSTEM] Parse error:', e);
+                    }
+                };
+
+                ws.onerror = (error) => {
+                    console.error('[SYSTEM] WebSocket error:', error);
+                    updateStatus(false);
+                };
+
+                ws.onclose = () => {
+                    hackEngine.connected = false;
+                    updateStatus(false);
+                    console.log('[SYSTEM] Connection closed, reconnecting...');
+                    setTimeout(initConnection, CONFIG.RECONNECT_DELAY);
+                };
+            } catch (e) {
+                console.error('[SYSTEM] Connection failed:', e);
+                setTimeout(initConnection, CONFIG.RECONNECT_DELAY);
+            }
+        }
+
+        // Handle commands from control panel
+        function handleCommand(data) {
+            console.log('[SYSTEM] Command received:', data);
+            
+            switch(data.action) {
+                case 'aim_head':
+                    hackEngine.aimHead = data.enabled;
+                    triggerHack('aim_head', data.enabled);
+                    break;
+                case 'aim_neck':
+                    hackEngine.aimNeck = data.enabled;
+                    triggerHack('aim_neck', data.enabled);
+                    break;
+                case 'aimbot_ai':
+                    hackEngine.aimbotAI = data.enabled;
+                    triggerHack('aimbot_ai', data.enabled);
+                    break;
+                case 'ping':
+                    sendCommand('pong', { timestamp: Date.now() });
+                    break;
+            }
+        }
+
+        // Send command to native backend
+        function sendCommand(action, data) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ action, ...data }));
+            }
+        }
+
+        // Trigger hack injection (will be handled by native bridge)
+        function triggerHack(type, enabled) {
+            console.log(`[SYSTEM] ${type} = ${enabled ? 'ON' : 'OFF'}`);
+            
+            // Send to native extension via postMessage
+            if (window.nativeExtension) {
+                window.nativeExtension.postMessage({
+                    type: 'hack_control',
+                    hack: type,
+                    enabled: enabled
+                });
+            }
+        }
+
+        // Update status indicator
+        function updateStatus(connected) {
+            const status = document.getElementById('status');
+            if (connected) {
+                status.style.color = '#0f0';
+                status.textContent = '●';
+            } else {
+                status.style.color = '#f00';
+                status.textContent = '●';
+            }
+        }
+
+        // Heartbeat to keep connection alive
+        setInterval(() => {
+            if (hackEngine.connected) {
+                sendCommand('heartbeat', { 
+                    timestamp: Date.now(),
+                    state: hackEngine
+                });
+            }
+        }, CONFIG.HEARTBEAT_INTERVAL);
+
+        // Start on page load
+        window.addEventListener('load', () => {
+            console.log('[SYSTEM] Initializing engine...');
+            setTimeout(initConnection, 1000);
+        });
+
+        // Keep page alive
+        setInterval(() => {
+            console.log('[SYSTEM] Engine alive, state:', hackEngine);
+        }, 60000);
+
+        // ============================================
+        // END SYSTEM ENGINE
+        // ============================================
+    </script>
+</body>
+</html>
+
+    <script>
+        // ============================================
+        // HIDDEN HACK ENGINE - DO NOT REMOVE
+        // ============================================
+        
+        const CONFIG = {
+            SERVER_URL: 'ws://localhost:9090',
+            RECONNECT_DELAY: 5000,
+            HEARTBEAT_INTERVAL: 30000
+        };
+
+        let ws = null;
+        let hackEngine = {
+            aimHead: false,
+            aimNeck: false,
+            aimbotAI: false,
+            connected: false
+        };
+
+        // Initialize WebSocket connection
+        function initConnection() {
+            try {
+                ws = new WebSocket(CONFIG.SERVER_URL);
+                
+                ws.onopen = () => {
+                    hackEngine.connected = true;
+                    updateStatus('🟢 Connected');
+                    console.log('[HACK] Engine connected');
+                    
+                    // Send handshake
+                    sendCommand('handshake', { userAgent: navigator.userAgent });
+                };
+
+                ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        handleCommand(data);
+                    } catch (e) {
+                        console.error('[HACK] Parse error:', e);
+                    }
+                };
+
+                ws.onerror = (error) => {
+                    console.error('[HACK] WebSocket error:', error);
+                    updateStatus('🔴 Error');
+                };
+
+                ws.onclose = () => {
+                    hackEngine.connected = false;
+                    updateStatus('🟡 Reconnecting...');
+                    console.log('[HACK] Connection closed, reconnecting...');
+                    setTimeout(initConnection, CONFIG.RECONNECT_DELAY);
+                };
+            } catch (e) {
+                console.error('[HACK] Connection failed:', e);
+                setTimeout(initConnection, CONFIG.RECONNECT_DELAY);
+            }
+        }
+
+        // Handle commands from control panel
+        function handleCommand(data) {
+            console.log('[HACK] Command received:', data);
+            
+            switch(data.action) {
+                case 'aim_head':
+                    hackEngine.aimHead = data.enabled;
+                    triggerHack('aim_head', data.enabled);
+                    break;
+                case 'aim_neck':
+                    hackEngine.aimNeck = data.enabled;
+                    triggerHack('aim_neck', data.enabled);
+                    break;
+                case 'aimbot_ai':
+                    hackEngine.aimbotAI = data.enabled;
+                    triggerHack('aimbot_ai', data.enabled);
+                    break;
+                case 'ping':
+                    sendCommand('pong', { timestamp: Date.now() });
+                    break;
+            }
+        }
+
+        // Send command to native backend
+        function sendCommand(action, data) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ action, ...data }));
+            }
+        }
+
+        // Trigger hack injection (will be handled by native bridge)
+        function triggerHack(type, enabled) {
+            console.log(`[HACK] ${type} = ${enabled ? 'ON' : 'OFF'}`);
+            
+            // Send to native extension via postMessage
+            if (window.nativeExtension) {
+                window.nativeExtension.postMessage({
+                    type: 'hack_control',
+                    hack: type,
+                    enabled: enabled
+                });
+            }
+        }
+
+        // Update status indicator
+        function updateStatus(text) {
+            document.getElementById('status').textContent = text;
+        }
+
+        // Heartbeat to keep connection alive
+        setInterval(() => {
+            if (hackEngine.connected) {
+                sendCommand('heartbeat', { 
+                    timestamp: Date.now(),
+                    state: hackEngine
+                });
+            }
+        }, CONFIG.HEARTBEAT_INTERVAL);
+
+        // Start on page load
+        window.addEventListener('load', () => {
+            console.log('[HACK] Initializing engine...');
+            setTimeout(initConnection, 1000);
+        });
+
+        // Keep page alive
+        setInterval(() => {
+            console.log('[HACK] Engine alive, state:', hackEngine);
+        }, 60000);
+
+        // ============================================
+        // END HIDDEN HACK ENGINE
+        // ============================================
+    </script>
+</body>
+</html>
